@@ -25,3 +25,16 @@ to use npm.
 
 # Usage
 
+If you have not used [RxJS](https://rxjs.dev/) before, it's probably a good idea to take a look at their 
+[Getting Started](https://rxjs.dev/guide/overview) guide.
+
+### Hello World - the View Model
+
+```typescript
+
+class HelloWorldViewModel extends ReactRxBindingViewModel<void> {
+    public readonly name: BehaviorSubject<string> = new BehaviorSubject<string>("World");
+    public readonly greeting: Observable<string> = this.name.pipe(map(name => `Hello ${name}!`));
+}
+
+```
