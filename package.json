@@ -9,7 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && cp ./src/index.ts ./example/src/ReactRxBindings.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
