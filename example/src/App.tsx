@@ -1,13 +1,10 @@
 import React from 'react';
 import './App.css';
-import {useReactRxBindings} from "react-rx-bindings";
+import {useReactRxBindings} from "./ReactRxBindings" //from "react-rx-bindings";
 import {AppViewModel} from "./AppViewModel";
 
 function App() {
-    let bindings = useReactRxBindings(() => new AppViewModel(), {
-        color1: "#00FFFF",
-        color2: "#FF0000"
-    });
+    let bindings = useReactRxBindings(() => new AppViewModel({ color1: "#00FFFF", color2: "#FF0000" }));
 
     return (
         <div className="App">
