@@ -102,7 +102,7 @@ like validating an email
 
 ### ValidateEmail ViewModel
 
-[ValidateEmailFunction.ts](https://github.com/seven-sevens/react-rx-bindings/blob/main/example/src/components/validate-email/ValidateEmailViewModel.ts)
+[ValidateEmailViewModel.ts](https://github.com/seven-sevens/react-rx-bindings/blob/main/example/src/components/validate-email/ValidateEmailViewModel.ts)
 ```
 import {Bindable, ReactRxBindingViewModel} from "../../ReactRxBindings";
 import {BehaviorSubject, Subscription} from "rxjs";
