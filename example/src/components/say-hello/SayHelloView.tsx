@@ -1,6 +1,4 @@
 import {useReactRxBindings} from "../../ReactRxBindings";
-import {AppViewModel} from "../../AppViewModel";
-import {Provider} from "react-redux";
 import React from "react";
 import {SayHelloViewModel} from "./SayHelloViewModel";
 
