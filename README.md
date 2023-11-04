@@ -228,13 +228,13 @@ export class WithReduxViewModel extends ReactRxBindingViewModel<RootStore> {
     // You don't need bindable here, but it's here to document that it's used in the view
     @Bindable() changeToOtherColor$ = new Subject<void>();
 
-    reduxSubscription: Unsubscribe | undefined;
+    reduxUnsubscribe: Unsubscribe | undefined;
     initialize(store: RootStore): Subscription[] {
         let subscriptions: Subscription[] = []; // first create a variable to store all subscriptions in
 
         // simple example of updating a bindable from redux, we have to save the redux subscription so that we can unsubscribe from it later
         // in cleanup
-        this.reduxSubscription = store.subscribe(() => {
+        this.reduxUnsubscribe = store.subscribe(() => {
             this.messageColor$.next(store.getState().colorSlice.color);
         })
 
@@ -259,7 +259,7 @@ export class WithReduxViewModel extends ReactRxBindingViewModel<RootStore> {
     }
 
     cleanUp(): void {
-        this.reduxSubscription?.(); // unsubscribe from redux
+        this.reduxUnsubscribe?.(); // unsubscribe from redux
     }
 }
 ```
