@@ -50,8 +50,8 @@ export class SayHelloViewModel extends ReactRxBindingViewModel<void> {
     }
 }
 ```
-First thing to notice is the `@Bindable()` decorator.  This is used to mark a property as bindable, which means that
-if the state of the variable is updated, it will trigger a UI refresh.  This is the key to simplifying managing
+First thing to notice is the `@Bindable()` decorator.  This is used to mark a RxJS Subject as bindable, which means that
+if the state of the Subject is updated, it will trigger a UI refresh.  This is the key to simplifying managing
 the UI via RxJS.
 
 For now, we're just displaying the value, so we don't need to worry about subscriptions.  We'll get to that later.
@@ -61,9 +61,6 @@ want to pass an initial state, you can use the generic `ReactRxBindingViewModel<
 to `initialize`.
 
 ### SayHello View
-
-
-
 [SayHelloView.tsx](https://github.com/seven-sevens/react-rx-bindings/blob/main/example/src/components/say-hello/SayHelloView.tsx)
 ```
 import {useReactRxBindings} from "../../ReactRxBindings";
@@ -168,4 +165,47 @@ More of the same here.  Notice we're able to update `email$` and `isValid$` and 
 
 Before going through the Redux example, let's take a quick detour to make it easier to store subscriptions.
 
+This is not part of the library because it adds a function to an internal object, which can change between versions.
+It's also pretty simple to add it yourself.  VSCode does not seem to like auto-complete on this, but it does work.
+
 [Subscription+storeIn.ts](https://github.com/seven-sevens/react-rx-bindings/blob/main/example/src/extensions/Subscription%2BstoreIn.ts)
+```
+import {Subscription} from "rxjs";
+
+// this adds a convenience method to the subscription class to make it easier to store subscriptions in an array
+// @ts-ignore
+declare module "rxjs/internal/Subscription" {
+    interface Subscription {
+        storeIn(store: Subscription []): void;
+    }
+}
+
+Subscription.prototype.storeIn = function(store: Subscription []) {
+    store.push(this);
+}
+```
+
+What this does is allow you to call `.storeIn` on a subscription, and it will automatically add it to an array.
+
+For example
+```
+let subscriptions: Subscription[] = []; // make a single array to store subscriptions in
+
+this.email$.subscribe(email => {
+    this.isValid$.next(validateEmail(email));
+})
+.storeIn(subscriptions); // <-- Use this to store the subscription.  This saves nesting and makes the code cleaner.
+
+return subscriptions;
+```
+
+It's not very noticeable yet because we only have one subscription, but when you've got several, and some pipelines
+going, it makes it much easier to read, and easy to go through and make sure I've saved each subscription.
+
+## Redux Example
+
+It's React, you've probably heard of Redux.  You can use Redux to manage state along with MVVM and `react-rx-bindings`.
+My way of doing it is to make a shadow `@Bindable()` variable for each Redux variable.  This way, it's possible
+to simulate the Redux state changes in tests.
+
+I've pulled out the Redux code into it's own file [WithReduxStore.ts]()
