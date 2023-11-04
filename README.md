@@ -23,10 +23,14 @@ The easiest way to install is with npm.
 The entire implementation is in `index.ts` so you can also just copy and paste the code into your project if you do not want
 to use npm.
 
-# Usage
+# A word about RxJS
 
 If you have not used [RxJS](https://rxjs.dev/) before, it's probably a good idea to take a look at their 
 [Getting Started](https://rxjs.dev/guide/overview) guide.
+
+# Usage
+
+Look in the examples folder for a full, running react app.
 
 ## First Example
 ### SayHello ViewModel
@@ -57,6 +61,8 @@ want to pass an initial state, you can use the generic `ReactRxBindingViewModel<
 to `initialize`.
 
 ### SayHello View
+
+
 
 [SayHelloView.tsx](https://github.com/seven-sevens/react-rx-bindings/blob/main/example/src/components/say-hello/SayHelloView.tsx)
 ```
@@ -92,3 +98,74 @@ This is to make it easier to reference the bindings in the view.  You can refere
 You can update the value by calling `bindings.rx.name$.next(new_val)`.  Because `bindings.rx.name$` is a `@Bindable()`
 variable, simply updating the value will cause the UI to refresh.
 
+## A Second example, with subscriptions
+
+The first example was extremely simple.  Let's look at a more complicated example.
+like validating an email
+
+### ValidateEmail ViewModel
+
+[ValidateEmailFunction.ts](https://github.com/seven-sevens/react-rx-bindings/blob/main/example/src/components/validate-email/ValidateEmailViewModel.ts)
+```
+import {Bindable, ReactRxBindingViewModel} from "../../ReactRxBindings";
+import {BehaviorSubject, Subscription} from "rxjs";
+import "../../extensions/Subscription+storeIn";
+import {validateEmail} from "./ValidateEmailFunction";
+
+export class ValidateEmailViewModel extends ReactRxBindingViewModel<void> {
+    @Bindable() email$ = new BehaviorSubject("");
+    @Bindable() isValid$ = new BehaviorSubject(false);
+    initialize(_: void): Subscription[] {
+        // return the one subscription we made so we'll clean it up at unmount
+        return [
+            this.email$.subscribe(email => {
+                this.isValid$.next(validateEmail(email));
+            })
+        ]
+    }
+
+    cleanUp(): void {
+    }
+}
+```
+
+The big addition here is `.subscribe`.  Importantly, notice that we're returning the subscription, which tells
+`ReactRxBindingViewModel` to clean it up when the component unmounts.  This is important to prevent memory leaks.
+
+***Always return subscriptions from `initialize` if you don't do this, it'll cause a memory leak.***
+
+`.subscribe` runs every time the value of `email$` changes.  Here it updates `isValid$`, which is a `@Bindable()`
+so the UI will update.
+
+### ValidateEmail View
+
+[ValidateEmailView.tsx](https://github.com/seven-sevens/react-rx-bindings/blob/main/example/src/components/validate-email/ValidateEmailView.tsx)
+
+```
+import {useReactRxBindings} from "../../ReactRxBindings";
+import React from "react";
+import {ValidateEmailViewModel} from "./ValidateEmailViewModel";
+
+export default function ValidateEmailView() {
+    let bindings = useReactRxBindings(() => new ValidateEmailViewModel(), undefined);
+
+    return (
+        <div>
+            <input type="text"
+                   placeholder="Email"
+                   value={bindings.rx.email$.value} 
+                   onChange={(e) => bindings.rx.email$.next(e.target.value)} />
+            <br />
+            <p>Email is {bindings.rx.isValid$.value ? "valid" : "invalid"}</p>
+        </div>
+    );
+}
+```
+
+More of the same here.  Notice we're able to update `email$` and `isValid$` and have the view update automatically.
+
+## Side-quest, making it easier to store subscriptions
+
+Before going through the Redux example, let's take a quick detour to make it easier to store subscriptions.
+
+[Subscription+storeIn.ts](https://github.com/seven-sevens/react-rx-bindings/blob/main/example/src/extensions/Subscription%2BstoreIn.ts)

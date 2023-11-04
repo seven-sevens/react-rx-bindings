@@ -7,7 +7,10 @@ export default function ValidateEmailView() {
 
     return (
         <div>
-            <input type="text" value={bindings.rx.email$.value} placeholder="Email" onChange={(e) => bindings.rx.email$.next(e.target.value)} />
+            <input type="text"
+                   placeholder="Email"
+                   value={bindings.rx.email$.value}
+                   onChange={(e) => bindings.rx.email$.next(e.target.value)} />
             <br />
             <p>Email is {bindings.rx.isValid$.value ? "valid" : "invalid"}</p>
         </div>

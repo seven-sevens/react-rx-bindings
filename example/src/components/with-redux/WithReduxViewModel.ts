@@ -31,7 +31,7 @@ export class WithReduxViewModel extends ReactRxBindingViewModel<RootStore> {
                 this.helloMessage$.next(`Hello ${firstName} ${lastName}!`);
             })
             .storeIn(subscriptions); // remember to add the subscription to the list.  If we don't do this it won't be unsubscribed when the component is unmounted
-        // You can also store this individually and return it in the list of subscriptions at the bottom of this function (see the bottom of this function)
+            // You can also store this individually and return it in the list of subscriptions at the bottom of this function (see the bottom of this function)
 
         // here's an example of calling a redux action from a bindable
         this.changeToOtherColor$
@@ -39,7 +39,7 @@ export class WithReduxViewModel extends ReactRxBindingViewModel<RootStore> {
                 store.dispatch(changeColor());
             })
             .storeIn(subscriptions); // remember to add the subscription to the list.  If we don't do this it won't be unsubscribed when the component is unmounted
-        // You can also store this individually and return it in the list of subscriptions at the bottom of this function (see the bottom of this function)
+            // You can also store this individually and return it in the list of subscriptions at the bottom of this function (see the bottom of this function)
 
         return subscriptions; // return the list of subscriptions so that they can be unsubscribed when the component is unmounted
     }
