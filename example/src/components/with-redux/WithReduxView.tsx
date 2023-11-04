@@ -4,6 +4,7 @@ import {WithReduxViewModel} from "./WithReduxViewModel";
 import {store} from "./WithReduxStore";
 
 export default function WithReduxView() {
+    // we're passing the redux store to the bindings
     let bindings = useReactRxBindings(() => new WithReduxViewModel(), store);
 
     return (

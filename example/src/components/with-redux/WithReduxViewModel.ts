@@ -18,7 +18,7 @@ export class WithReduxViewModel extends ReactRxBindingViewModel<RootStore> {
     initialize(store: RootStore): Subscription[] {
         let subscriptions: Subscription[] = []; // first create a variable to store all subscriptions in
 
-        // simple example of updating a bindable from redux, we have to save the subscription so that we can unsubscribe from it later
+        // simple example of updating a bindable from redux, we have to save the redux subscription so that we can unsubscribe from it later
         // in cleanup
         this.reduxSubscription = store.subscribe(() => {
             this.messageColor$.next(store.getState().colorSlice.color);
