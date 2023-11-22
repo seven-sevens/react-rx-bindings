@@ -106,19 +106,20 @@ like validating an email
 ```
 import {Bindable, ReactRxBindingViewModel} from "../../ReactRxBindings";
 import {BehaviorSubject, Subscription} from "rxjs";
-import "../../extensions/Subscription+storeIn";
 import {validateEmail} from "./ValidateEmailFunction";
 
 export class ValidateEmailViewModel extends ReactRxBindingViewModel<void> {
     @Bindable() email$ = new BehaviorSubject("");
     @Bindable() isValid$ = new BehaviorSubject(false);
     initialize(_: void): Subscription[] {
-        // return the one subscription we made so we'll clean it up at unmount
-        return [
-            this.email$.subscribe(email => {
-                this.isValid$.next(validateEmail(email));
-            })
-        ]
+        let subscriptions: Subscription[] = [];
+
+        this.email$.subscribe(email => {
+            this.isValid$.next(validateEmail(email));
+        })
+        .storeIn(subscriptions);
+
+        return subscriptions;
     }
 
     cleanUp(): void {
@@ -130,6 +131,9 @@ The big addition here is `.subscribe`.  Importantly, notice that we're returning
 `ReactRxBindingViewModel` to clean it up when the component unmounts.  This is important to prevent memory leaks.
 
 ***Always return subscriptions from `initialize` if you don't do this, it'll cause a memory leak.***
+
+Also notice that we're using `.storeIn(subscriptions)`.  This is a convenience method that will add the subscription
+to an array.  It makes it cleaner to return the subscriptions from `initialize`.
 
 `.subscribe` runs every time the value of `email$` changes.  Here it updates `isValid$`, which is a `@Bindable()`
 so the UI will update.
@@ -163,10 +167,10 @@ More of the same here.  Notice we're able to update `email$` and `isValid$` and 
 
 ## Side-quest, making it easier to store subscriptions
 
-Before going through the Redux example, let's take a quick detour to make it easier to store subscriptions.
+Before going through the Redux example, let's take a quick detour to look at storeIn.
 
-This is not part of the library because it adds a function to an internal object, which can change between versions.
-It's also pretty simple to add it yourself.  VSCode does not seem to like auto-complete on this, but it does work.
+This adds a function to an internal object, which can change between versions.  VSCode does not seem to like 
+auto-complete on this, but it does work.
 
 [Subscription+storeIn.ts](https://github.com/seven-sevens/react-rx-bindings/blob/main/example/src/extensions/Subscription%2BstoreIn.ts)
 ```
@@ -200,7 +204,7 @@ return subscriptions;
 ```
 
 It's not very noticeable yet because we only have one subscription, but when you've got several, and some pipelines
-going, it makes it much easier to read, and easy to go through and make sure I've saved each subscription.
+going, it makes it much easier to read, and easy to go through and make sure you've saved each subscription.
 
 ## Redux Example
 
