@@ -1,6 +1,6 @@
 {
   "name": "react-rx-bindings",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Simple project that allows you to use rxjs with react more easily",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
