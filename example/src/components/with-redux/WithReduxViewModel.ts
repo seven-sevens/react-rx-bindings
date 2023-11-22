@@ -2,7 +2,6 @@ import {Bindable, ReactRxBindingViewModel} from "../../ReactRxBindings";
 import {changeColor, RootStore} from "./WithReduxStore";
 import {BehaviorSubject, combineLatest, distinctUntilChanged, Subject, Subscription} from "rxjs";
 import {Unsubscribe} from "redux";
-import "../../extensions/Subscription+storeIn";
 
 export class WithReduxViewModel extends ReactRxBindingViewModel<RootStore> {
     @Bindable() firstName$ = new BehaviorSubject("");
